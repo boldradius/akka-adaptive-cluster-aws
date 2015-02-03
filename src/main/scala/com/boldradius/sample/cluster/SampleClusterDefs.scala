@@ -5,16 +5,16 @@ import scala.language.implicitConversions
 object SampleClusterDefs {
 
   case class GetActorMetrics()
-
-  case class ActorMetrics(id: String)
   
-  case class Metrics(address: String, timestamp: Long, cpu: Double)
+  trait MetricsT
+  case class NoMetricsPresent() extends MetricsT
+  case class Metrics(address: String, timestamp: Long, cpu: Double) extends MetricsT
   
   case class SimpleClusterResponse(status: String, details: ResponseDetails)
   
   sealed trait ResponseDetails
-  case class MetricsDetails(metrics: Metrics) extends ResponseDetails
-  implicit def Metrics2ResponseDetails(metrics: Metrics) = MetricsDetails(metrics)
+  case class MetricsDetails(metrics: MetricsT) extends ResponseDetails
+  implicit def Metrics2ResponseDetails(metrics: MetricsT) = MetricsDetails(metrics)
   case class ErrorDetails(message: String) extends ResponseDetails
   implicit def String2ResponseDetails(error: Throwable) = ErrorDetails(error.getMessage())
 

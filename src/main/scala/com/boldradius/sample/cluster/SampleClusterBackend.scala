@@ -19,20 +19,28 @@ class SampleClusterBackend extends Actor with ActorLogging {
 
   val selfAddress = Cluster(context.system).selfAddress
   
-  //TODO: become/unbecome
-  var nodeMetrics: NodeMetrics = _
-
   override def preStart(): Unit =
     Cluster(context.system).subscribe(self, classOf[ClusterMetricsChanged])
   override def postStop(): Unit =
     Cluster(context.system).unsubscribe(self)
-
-  def receive = {
+    
+    
+  def receive2(nodeMetrics: NodeMetrics): Receive = {
     case c: GetActorMetrics =>
       sender() ! Metrics(address = nodeMetrics.address.toString, timestamp = nodeMetrics.timestamp, cpu = nodeMetrics.metric("cpu-combined").map(_.value.doubleValue()).getOrElse(-1.0))
     case ClusterMetricsChanged(clusterMetrics) =>
       clusterMetrics.filter(_.address == selfAddress) foreach { newNodeMetrics =>
-        nodeMetrics = newNodeMetrics
+        context.become(receive2(newNodeMetrics))
+      }
+    case state: CurrentClusterState => // ignore
+  }  
+
+  def receive = {
+    case c: GetActorMetrics => // didn't get first metrics
+      sender() ! NoMetricsPresent
+    case ClusterMetricsChanged(clusterMetrics) =>
+      clusterMetrics.filter(_.address == selfAddress) foreach { newNodeMetrics =>
+        context.become(receive2(newNodeMetrics))
       }
     case state: CurrentClusterState => // ignore
   }
