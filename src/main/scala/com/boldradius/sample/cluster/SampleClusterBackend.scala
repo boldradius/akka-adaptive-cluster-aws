@@ -28,8 +28,8 @@ class SampleClusterBackend extends Actor with ActorLogging {
     Cluster(context.system).unsubscribe(self)
 
   def receive = {
-    case GetActorMetrics =>
-      sender() ! nodeMetrics.toString
+    case c: GetActorMetrics =>
+      sender() ! Metrics(address = nodeMetrics.address.toString, timestamp = nodeMetrics.timestamp, cpu = nodeMetrics.metric("cpu-combined").map(_.value.doubleValue()).getOrElse(-1.0))
     case ClusterMetricsChanged(clusterMetrics) =>
       clusterMetrics.filter(_.address == selfAddress) foreach { newNodeMetrics =>
         nodeMetrics = newNodeMetrics

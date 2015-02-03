@@ -25,11 +25,11 @@ trait SampleClusterHttpRoute extends Json4sSupport {
 
     get {
       path("cluster") {
-        onComplete((frontendActor ? GetActorMetrics).mapTo[Metrics]) {
+        onComplete((frontendActor ? GetActorMetrics()).mapTo[Metrics]) {
           case Success(metrics) =>
-            complete(Response("success", metrics))
+            complete(SimpleClusterResponse("success", metrics))
           case Failure(f) =>
-            complete(Response("error", f))
+            complete(SimpleClusterResponse("error", f))
         }
       }
     }

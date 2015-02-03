@@ -24,6 +24,8 @@ val project = Project(
     javaOptions in run ++= Seq(
       "-Djava.library.path=./sigar",
       "-Xms128m", "-Xmx1024m"),
+    javaOptions in test ++= Seq(
+      "-Djava.library.path=./sigar"),
     Keys.fork in run := true,  
     // disable parallel tests
     parallelExecution in Test := false

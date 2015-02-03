@@ -8,9 +8,9 @@ object SampleClusterDefs {
 
   case class ActorMetrics(id: String)
   
-  case class Metrics(timestamp: Long, cpu: Double)
+  case class Metrics(address: String, timestamp: Long, cpu: Double)
   
-  case class Response(status: String, details: ResponseDetails)
+  case class SimpleClusterResponse(status: String, details: ResponseDetails)
   
   sealed trait ResponseDetails
   case class MetricsDetails(metrics: Metrics) extends ResponseDetails
