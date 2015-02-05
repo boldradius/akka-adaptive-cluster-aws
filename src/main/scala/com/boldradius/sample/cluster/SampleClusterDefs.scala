@@ -16,7 +16,7 @@ object SampleClusterDefs {
   case class MetricsDetails(metrics: MetricsT) extends ResponseDetails
   implicit def Metrics2ResponseDetails(metrics: MetricsT) = MetricsDetails(metrics)
   case class ErrorDetails(message: String) extends ResponseDetails
-  implicit def String2ResponseDetails(error: Throwable) = ErrorDetails(error.getMessage())
+  implicit def Throwable2ResponseDetails(error: Throwable) = ErrorDetails(error.getMessage())
 
   val ActorSystemName = "ClusterSystem"
   val FrontendActorName = "sampleClusterFrontend"
